@@ -9,7 +9,10 @@ import (
 var Config = viper.New()
 
 func LoadConfig() {
-	Config.SetConfigFile("D:/zjh_things/L-F/config.yaml")
+	Config.SetConfigName("config")
+	Config.SetConfigType("yaml")
+	Config.AddConfigPath(".")
+	Config.AddConfigPath("./configs")
 	err := Config.ReadInConfig()
 	if err != nil {
 		log.Fatalf("读取配置文件失败")
