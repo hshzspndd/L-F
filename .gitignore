@@ -6,3 +6,4 @@ bin/
 .db
 .sqlite
 .vscode/
+__debug_bin.exe

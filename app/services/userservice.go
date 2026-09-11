@@ -5,6 +5,7 @@ import (
 	"L-F/app/utiles"
 	"L-F/configs/database"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -41,4 +42,35 @@ func Register(userName string, password string, role string) (string, int, int) 
 		return "", user.UserId, 200
 	}
 	return "用户已存在", 0, 409
+}
+
+// 登陆时检验用户是否存在
+func CheckUserExistWhenLogin(userName string) (bool, models.User) {
+	var user models.User
+	err := database.DB.Model(&models.User{}).Where("user_name = ?", userName).First(&user).Error
+	if err == gorm.ErrRecordNotFound {
+		return false, models.User{}
+	}
+	return true, user
+}
+
+// 检验密码是否正确
+func CheckPassword(password1 string, password2 string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(password1), []byte(password2))
+	return err == nil
+}
+
+// 用户登录
+func Login(userName string, password string) (string, int, int, string) {
+	flag, user := CheckUserExistWhenLogin(userName)
+	if flag {
+		loginPassword := user.Password
+		if CheckPassword(loginPassword, password) {
+			return "", 200, user.UserId, user.Role
+		} else {
+			return "密码错误", 403, 0, ""
+		}
+	} else {
+		return "用户不存在", 404, 0, ""
+	}
 }

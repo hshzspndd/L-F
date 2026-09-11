@@ -13,5 +13,6 @@ func Router(c *gin.Engine) {
 	api.Use(middles.GlobalResponseError)
 	{
 		api.POST("/register", controllers.Register)
+		api.POST("/login", controllers.Login)
 	}
 }
