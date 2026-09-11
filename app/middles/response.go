@@ -25,7 +25,7 @@ func GetError(code int, message string) *ResponseForm {
 func ResponseSuccess(c *gin.Context, data interface{}) {
 	var response_success ResponseForm
 	response_success = ResponseForm{
-		Code:    0,
+		Code:    200,
 		Message: "success",
 		Data:    data,
 	}
