@@ -4,3 +4,5 @@ database:
   user: 你的user
   password: 你的password
   dbname: 你的dbname
+jwt:
+  key: 你的jwt密钥

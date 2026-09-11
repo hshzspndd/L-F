@@ -1,6 +1,7 @@
 package utiles
 
 import (
+	"L-F/configs/config"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -14,7 +15,7 @@ type Claims struct {
 
 func GenerateJwt(userId int, userName string) (string, error, time.Time) {
 	var (
-		key                 = []byte("zjh20080210")
+		key                 = []byte(config.Config.GetString("jwt.key"))
 		expiredAt time.Time = time.Now().Add(2 * time.Hour)
 	)
 	claims := Claims{
