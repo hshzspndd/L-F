@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  port: 3306
+  user: 你的user
+  password: 你的password
+  dbname: 你的dbname
