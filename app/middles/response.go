@@ -36,7 +36,7 @@ func GlobalResponseError(c *gin.Context) {
 	c.Next()
 	if len(c.Errors) > 0 {
 		if err, ok := c.Errors.Last().Err.(*ResponseForm); ok {
-			c.JSON(400, ResponseForm{
+			c.JSON(err.Code, ResponseForm{
 				Code:    err.Code,
 				Message: err.Message,
 				Data:    err.Data,
