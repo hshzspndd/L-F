@@ -1,19 +1,36 @@
 package database
 
 import (
+	"fmt"
 	"log"
 
-	"github.com/spf13/viper"
+	"L-F/app/models"
+	"L-F/configs/config"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-var config = viper.New()
+var DB *gorm.DB
 
-func LoadConfig() {
-	config.SetConfigFile("config.yaml")
-	err := config.ReadInConfig()
+func InitDB() {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		config.Config.GetString("database.user"),
+		config.Config.GetString("database.password"),
+		config.Config.GetString("database.host"),
+		config.Config.GetInt("database.port"),
+		config.Config.GetString("database.dbname"),
+	)
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("读取配置文件失败")
-		return
+		log.Fatalf("数据库创建失败")
 	}
-	log.Fatal("读取配置文件成功")
+
+	err = db.AutoMigrate(&models.User{})
+	if err != nil {
+		log.Fatalf("用户信息数据表创建失败")
+	}
+
+	DB = db
 }
