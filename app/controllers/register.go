@@ -8,8 +8,8 @@ import (
 )
 
 type RegisterData struct {
-	UserName string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	UserName string `json:"username" binding:"required,min=3,max=15"`
+	Password string `json:"password" binding:"required,min=6,max=15"`
 	Role     string `json:"role" binding:"required,oneof=系统管理员 失物招领管理员 普通用户"`
 }
 
