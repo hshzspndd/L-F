@@ -15,7 +15,7 @@ func CheckUserExistWhenRegister(userName string) bool {
 	return true
 }
 
-func Register(userName string, password string, role string) (string, int) {
+func Register(userName string, password string, role string) (string, int, int) {
 	var user models.User
 	user.UserName = userName
 	user.Password = password
@@ -23,9 +23,9 @@ func Register(userName string, password string, role string) (string, int) {
 	if !CheckUserExistWhenRegister(userName) {
 		err := database.DB.Model(&models.User{}).Create(&user).Error
 		if err != nil {
-			return "注册失败", 0
+			return "注册失败", 0, 400
 		}
-		return "", user.UserId
+		return "", user.UserId, 200
 	}
-	return "用户已存在", 0
+	return "用户已存在", 0, 409
 }

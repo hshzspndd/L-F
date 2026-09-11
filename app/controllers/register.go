@@ -27,9 +27,9 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	msg, id := services.Register(register_data.UserName, register_data.Password, register_data.Role)
+	msg, id, code := services.Register(register_data.UserName, register_data.Password, register_data.Role)
 	if msg != "" {
-		c.Error(middles.GetError(400, msg))
+		c.Error(middles.GetError(code, msg))
 		return
 	}
 
