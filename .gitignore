@@ -1,0 +1,8 @@
+config.yaml
+.exe
+.o
+.a
+bin/
+.db
+.sqlite
+.vscode/
