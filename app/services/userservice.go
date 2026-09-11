@@ -42,20 +42,23 @@ func Register(userName string, password string, role string) (string, int, int) 
 		if err != nil {
 			return "注册失败", 0, 500
 		}
+		// 顺利注册
+		return "", user.UserId, 200
 	}
-	// 顺利注册
-	return "", user.UserId, 200
+	return "用户已存在", 0, 409
 
 }
 
 // 登陆时检验用户是否存在
-func CheckUserExistWhenLogin(userName string) (bool, models.User) {
+func CheckUserExistWhenLogin(userName string) (bool, error, models.User) {
 	var user models.User
 	err := database.DB.Model(&models.User{}).Where("user_name = ?", userName).First(&user).Error
 	if err == gorm.ErrRecordNotFound {
-		return false, models.User{}
+		return false, nil, models.User{}
+	} else if err != nil {
+		return false, err, models.User{}
 	}
-	return true, user
+	return true, nil, user
 }
 
 // 检验密码是否正确
@@ -66,7 +69,10 @@ func CheckPassword(password1 string, password2 string) bool {
 
 // 用户登录
 func Login(userName string, password string) (string, int, int, string) {
-	flag, user := CheckUserExistWhenLogin(userName)
+	flag, err, user := CheckUserExistWhenLogin(userName)
+	if err != nil {
+		return "用户信息校验失败", 500, 0, ""
+	}
 	if flag {
 		loginPassword := user.Password
 		if CheckPassword(loginPassword, password) {

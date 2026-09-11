@@ -41,6 +41,12 @@ func GlobalResponseError(c *gin.Context) {
 				Message: err.Message,
 				Data:    err.Data,
 			})
+		} else {
+			c.JSON(500, ResponseForm{
+				Code:    500,
+				Message: "服务器内部错误",
+				Data:    nil,
+			})
 		}
 		c.Abort()
 	}
