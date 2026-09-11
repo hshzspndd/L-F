@@ -3,7 +3,7 @@ package controllers
 import (
 	"L-F/app/middles"
 	"L-F/app/services"
-	"L-F/app/utiles"
+	"L-F/app/utils"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,20 +23,20 @@ type ResponseLoginData struct {
 }
 
 func Login(c *gin.Context) {
-	var login_data LoginData
-	err := c.ShouldBindJSON(&login_data)
+	var loginData LoginData
+	err := c.ShouldBindJSON(&loginData)
 	if err != nil {
 		c.Error(middles.GetError(400, "数据获取失败"))
 		return
 	}
 
-	message, code, id, role := services.Login(login_data.UserName, login_data.Password)
+	message, code, id, role := services.Login(loginData.UserName, loginData.Password)
 	if id == 0 {
 		c.Error(middles.GetError(code, message))
 		return
 	}
 
-	token, err, expiredAt := utiles.GenerateJwt(id, login_data.UserName)
+	token, err, expiredAt := utils.GenerateJwt(id, loginData.UserName)
 	if err != nil {
 		c.Error(middles.GetError(500, "登录令牌生成失败"))
 		return
@@ -46,7 +46,7 @@ func Login(c *gin.Context) {
 		Token:     token,
 		ExpiredAt: expiredAt,
 		Id:        id,
-		UserName:  login_data.UserName,
+		UserName:  loginData.UserName,
 		Role:      role,
 	})
 

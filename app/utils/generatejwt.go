@@ -1,4 +1,4 @@
-package utiles
+package utils
 
 import (
 	"L-F/configs/config"

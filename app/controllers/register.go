@@ -20,14 +20,14 @@ type ResponseRegisterData struct {
 }
 
 func Register(c *gin.Context) {
-	var register_data RegisterData
-	err := c.ShouldBindJSON(&register_data)
+	var registerData RegisterData
+	err := c.ShouldBindJSON(&registerData)
 	if err != nil {
 		c.Error(middles.GetError(400, "数据获取失败"))
 		return
 	}
 
-	msg, id, code := services.Register(register_data.UserName, register_data.Password, register_data.Role)
+	msg, id, code := services.Register(registerData.UserName, registerData.Password, registerData.Role)
 	if msg != "" {
 		c.Error(middles.GetError(code, msg))
 		return
@@ -35,7 +35,7 @@ func Register(c *gin.Context) {
 
 	middles.ResponseSuccess(c, ResponseRegisterData{
 		Id:       id,
-		UserName: register_data.UserName,
-		Role:     register_data.Role,
+		UserName: registerData.UserName,
+		Role:     registerData.Role,
 	})
 }

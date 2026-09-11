@@ -2,7 +2,7 @@ package services
 
 import (
 	"L-F/app/models"
-	"L-F/app/utiles"
+	"L-F/app/utils"
 	"L-F/configs/database"
 
 	"golang.org/x/crypto/bcrypt"
@@ -10,12 +10,14 @@ import (
 )
 
 // 注册时检验用户是否存在
-func CheckUserExistWhenRegister(userName string) bool {
+func CheckUserExistWhenRegister(userName string) (bool, error) {
 	err := database.DB.Model(&models.User{}).Where("user_name = ?", userName).First(&models.User{}).Error
 	if err == gorm.ErrRecordNotFound {
-		return false
+		return false, nil
+	} else if err != nil {
+		return false, err
 	}
-	return true
+	return true, nil
 }
 
 // 用户注册
@@ -23,7 +25,7 @@ func Register(userName string, password string, role string) (string, int, int) 
 	var user models.User
 
 	// 将密码转化为哈希存储
-	hash_password, err := utiles.Hash(password)
+	hash_password, err := utils.Hash(password)
 	if err != nil {
 		return "密码加密失败", 0, 500
 	}
@@ -32,16 +34,18 @@ func Register(userName string, password string, role string) (string, int, int) 
 	user.Password = hash_password
 	user.Role = role
 
-	if !CheckUserExistWhenRegister(userName) {
+	if flag, err := CheckUserExistWhenRegister(userName); !flag {
+		if err != nil {
+			return "用户信息校验失败", 0, 500
+		}
 		err = database.DB.Model(&models.User{}).Create(&user).Error
 		if err != nil {
 			return "注册失败", 0, 500
 		}
-
-		// 顺利注册
-		return "", user.UserId, 200
 	}
-	return "用户已存在", 0, 409
+	// 顺利注册
+	return "", user.UserId, 200
+
 }
 
 // 登陆时检验用户是否存在
