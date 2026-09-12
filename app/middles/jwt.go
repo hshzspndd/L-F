@@ -15,7 +15,7 @@ func ParseJwt() gin.HandlerFunc {
 		authorizationList := strings.SplitN(authorization, " ", 2)
 		if len(authorizationList) != 2 && authorizationList[0] != "Bearer" {
 			c.Error(GetError(400, "无效的token"))
-			return
+			c.Abort()
 		}
 		tokenString := authorizationList[1]
 		token, err := jwt.ParseWithClaims(tokenString, &utils.Claims{}, func(t *jwt.Token) (any, error) {
@@ -23,9 +23,10 @@ func ParseJwt() gin.HandlerFunc {
 		})
 		if err != nil {
 			c.Error(GetError(500, "token解析失败"))
+			c.Abort()
 		}
 
 		c.Set("claims", token.Claims)
+		c.Next()
 	}
-
 }
