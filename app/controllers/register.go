@@ -8,9 +8,10 @@ import (
 )
 
 type RegisterData struct {
-	UserName string `json:"username" binding:"required,min=3,max=15"`
-	Password string `json:"password" binding:"required,min=6,max=15"`
-	Role     string `json:"role" binding:"required,oneof=系统管理员 失物招领管理员 普通用户"`
+	UserName   string `json:"username" binding:"required,min=3,max=15"`
+	Password   string `json:"password" binding:"required,min=6,max=15"`
+	Role       string `json:"role" binding:"required,oneof=系统管理员 失物招领管理员 普通用户"`
+	InviteCode string `json:"invite_code"`
 }
 
 type ResponseRegisterData struct {
@@ -27,7 +28,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	msg, id, code := services.Register(registerData.UserName, registerData.Password, registerData.Role)
+	msg, id, code := services.Register(registerData.UserName, registerData.Password, registerData.Role, registerData.InviteCode)
 	if msg != "" {
 		c.Error(middles.GetError(code, msg))
 		return

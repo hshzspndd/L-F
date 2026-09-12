@@ -6,3 +6,5 @@ database:
   dbname: 你的dbname
 jwt:
   key: 你的jwt密钥
+register:
+  admin_secret: 你的邀请码

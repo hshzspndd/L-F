@@ -36,7 +36,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err, expiredAt := utils.GenerateJwt(id, loginData.UserName)
+	token, err, expiredAt := utils.GenerateJwt(id, loginData.UserName, role)
 	if err != nil {
 		c.Error(middles.GetError(500, "登录令牌生成失败"))
 		return

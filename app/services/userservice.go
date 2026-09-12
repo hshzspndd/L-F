@@ -3,6 +3,7 @@ package services
 import (
 	"L-F/app/models"
 	"L-F/app/utils"
+	"L-F/configs/config"
 	"L-F/configs/database"
 
 	"golang.org/x/crypto/bcrypt"
@@ -10,7 +11,7 @@ import (
 )
 
 // 注册时检验用户是否存在
-func CheckUserExistWhenRegister(userName string) (bool, error) {
+func CheckUserExistsWhenRegister(userName string) (bool, error) {
 	err := database.DB.Model(&models.User{}).Where("user_name = ?", userName).First(&models.User{}).Error
 	if err == gorm.ErrRecordNotFound {
 		return false, nil
@@ -21,7 +22,7 @@ func CheckUserExistWhenRegister(userName string) (bool, error) {
 }
 
 // 用户注册
-func Register(userName string, password string, role string) (string, int, int) {
+func Register(userName string, password string, role string, inviteCode string) (string, int, int) {
 	var user models.User
 
 	// 将密码转化为哈希存储
@@ -30,11 +31,16 @@ func Register(userName string, password string, role string) (string, int, int) 
 		return "密码加密失败", 0, 500
 	}
 
+	if role == "系统管理员" || role == "失物招领管理员" {
+		if inviteCode != config.Config.GetString("register.admin_secret") {
+			return "没有权限", 0, 403
+		}
+	}
 	user.UserName = userName
 	user.Password = hash_password
 	user.Role = role
 
-	if flag, err := CheckUserExistWhenRegister(userName); !flag {
+	if flag, err := CheckUserExistsWhenRegister(userName); !flag {
 		if err != nil {
 			return "用户信息校验失败", 0, 500
 		}
@@ -50,7 +56,7 @@ func Register(userName string, password string, role string) (string, int, int) 
 }
 
 // 登陆时检验用户是否存在
-func CheckUserExistWhenLogin(userName string) (bool, error, models.User) {
+func CheckUserExistsWhenLogin(userName string) (bool, error, models.User) {
 	var user models.User
 	err := database.DB.Model(&models.User{}).Where("user_name = ?", userName).First(&user).Error
 	if err == gorm.ErrRecordNotFound {
@@ -69,7 +75,7 @@ func CheckPassword(password1 string, password2 string) bool {
 
 // 用户登录
 func Login(userName string, password string) (string, int, int, string) {
-	flag, err, user := CheckUserExistWhenLogin(userName)
+	flag, err, user := CheckUserExistsWhenLogin(userName)
 	if err != nil {
 		return "用户信息校验失败", 500, 0, ""
 	}

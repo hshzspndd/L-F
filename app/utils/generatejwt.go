@@ -10,10 +10,11 @@ import (
 type Claims struct {
 	UserId   int
 	UserName string
+	Role     string
 	jwt.RegisteredClaims
 }
 
-func GenerateJwt(userId int, userName string) (string, error, time.Time) {
+func GenerateJwt(userId int, userName string, role string) (string, error, time.Time) {
 	var (
 		key                 = []byte(config.Config.GetString("jwt.key"))
 		expiredAt time.Time = time.Now().Add(2 * time.Hour)
@@ -21,6 +22,7 @@ func GenerateJwt(userId int, userName string) (string, error, time.Time) {
 	claims := Claims{
 		UserId:   userId,
 		UserName: userName,
+		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiredAt),
 			Issuer:    "zjh",
