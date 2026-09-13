@@ -5,7 +5,7 @@ type ResponseErrorForm struct {
 	Message string
 }
 
-func (e *ResponseErrorForm) Errdor() string {
+func (e *ResponseErrorForm) Error() string {
 	return e.Message
 }
 

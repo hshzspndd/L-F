@@ -3,6 +3,7 @@ package controllers
 import (
 	"L-F/app/middles"
 	"L-F/app/services"
+	"errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,10 +29,14 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	user, responseErr, ok := services.Register(registerData.UserName, registerData.Password, registerData.Role, registerData.InviteCode)
-	if !ok {
-		c.Error(middles.GetError(responseErr.Code, responseErr.Message))
-		return
+	user, err := services.Register(registerData.UserName, registerData.Password, registerData.Role, registerData.InviteCode)
+	if err != nil {
+		var bizErr *services.ResponseErrorForm
+		if errors.As(err, &bizErr) {
+			c.Error(middles.GetError(bizErr.Code, bizErr.Message))
+		} else {
+			c.Error(middles.GetError(500, "服务器内部错误"))
+		}
 	}
 
 	middles.ResponseSuccess(c, ResponseRegisterData{

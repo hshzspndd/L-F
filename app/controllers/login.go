@@ -4,6 +4,7 @@ import (
 	"L-F/app/middles"
 	"L-F/app/services"
 	"L-F/app/utils"
+	"errors"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,10 +31,14 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	user, responseErr, ok := services.Login(loginData.UserName, loginData.Password)
-	if !ok {
-		c.Error(middles.GetError(responseErr.Code, responseErr.Message))
-		return
+	user, err := services.Login(loginData.UserName, loginData.Password)
+	if err != nil {
+		var bizErr *services.ResponseErrorForm
+		if errors.As(err, &bizErr) {
+			c.Error(middles.GetError(bizErr.Code, bizErr.Message))
+		} else {
+			c.Error(middles.GetError(500, "服务器内部错误"))
+		}
 	}
 
 	token, err, expiredAt := utils.GenerateJwt(user.UserId, user.UserName, user.Role)
