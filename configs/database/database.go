@@ -35,5 +35,10 @@ func InitDB() {
 		log.Fatalf("用户信息数据表创建失败")
 	}
 
+	err = db.AutoMigrate(&models.Post{})
+	if err != nil {
+		log.Fatalf("失物招领信息数据表创建失败")
+	}
+
 	DB = db
 }

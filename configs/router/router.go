@@ -14,5 +14,9 @@ func Router(c *gin.Engine) {
 	{
 		api.POST("/register", controllers.Register)
 		api.POST("/login", controllers.Login)
+		api.Use(middles.ParseJwt())
+		{
+			api.POST("/post", controllers.Post)
+		}
 	}
 }
