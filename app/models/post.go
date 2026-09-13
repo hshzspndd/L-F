@@ -8,4 +8,5 @@ type Post struct {
 	ContactPhone string `json:"contact_phone"`
 	Description  string `json:"description"`
 	//Image	 []string `json:"image"`
+	Status string `json:"status"`
 }

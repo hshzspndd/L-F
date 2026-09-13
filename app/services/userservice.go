@@ -92,13 +92,14 @@ func Login(userName string, password string) (string, int, int, string) {
 }
 
 // 创建失物招领信息
-func Post(postType string, userId int, title string, contactPhone string, description string) (string, int, int, error) {
+func CreatePost(postType string, userId int, title string, contactPhone string, description string) (string, int, int, error) {
 	var post models.Post
 	post.PostType = postType
 	post.UserId = userId
 	post.Title = title
 	post.ContactPhone = contactPhone
 	post.Description = description
+	post.Status = "待审核"
 	err := database.DB.Model(&models.Post{}).Create(&post).Error
 	if err != nil {
 		return "数据库出错", 0, 500, err
