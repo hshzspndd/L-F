@@ -4,6 +4,7 @@ import (
 	"L-F/app/middles"
 	"L-F/app/services"
 	"L-F/app/utils"
+	"errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,9 +63,14 @@ func Post(c *gin.Context) {
 	userId := claims.UserId
 	userName := claims.UserName
 	role := claims.Role
-	post, responseErr, ok := services.CreatePost(postData.PostType, userId, postData.Title, postData.ContactPhone, postData.Information.Description)
-	if !ok {
-		c.Error(middles.GetError(responseErr.Code, responseErr.Message))
+	post, err := services.CreatePost(postData.PostType, userId, postData.Title, postData.ContactPhone, postData.Information.Description)
+	if err != nil {
+		var bizErr *services.ResponseErrorForm
+		if errors.As(err, &bizErr) {
+			c.Error(middles.GetError(bizErr.Code, bizErr.Message))
+		} else {
+			c.Error(middles.GetError(500, "服务器内部错误"))
+		}
 		c.Abort()
 		return
 	}

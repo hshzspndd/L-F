@@ -92,7 +92,7 @@ func Login(userName string, password string) (models.User, *ResponseErrorForm, b
 }
 
 // 创建失物招领信息
-func CreatePost(postType string, userId int, title string, contactPhone string, description string) (models.Post, *ResponseErrorForm, bool) {
+func CreatePost(postType string, userId int, title string, contactPhone string, description string) (models.Post, error) {
 	var post models.Post
 	post.PostType = postType
 	post.UserId = userId
@@ -102,9 +102,9 @@ func CreatePost(postType string, userId int, title string, contactPhone string, 
 	post.Status = "待审核"
 	err := database.DB.Model(&models.Post{}).Create(&post).Error
 	if err != nil {
-		return models.Post{}, ErrDatabase, false
+		return models.Post{}, ErrDatabase
 	}
 
-	return post, &ResponseErrorForm{}, true
+	return post, nil
 
 }
