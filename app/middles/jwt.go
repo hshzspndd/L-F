@@ -23,7 +23,7 @@ func ParseJwt() gin.HandlerFunc {
 			return []byte(config.Config.GetString("jwt.key")), nil
 		})
 		if err != nil {
-			c.Error(GetError(400, "token解析失败"))
+			c.Error(GetError(401, "token解析失败"))
 			c.Abort()
 			return
 		}

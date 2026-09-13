@@ -19,17 +19,20 @@ type AuthorData struct {
 	Role     string `json:"role"`
 }
 type PostData struct {
-	PostId       int             `json:"id"`
 	PostType     string          `json:"type" binding:"required,oneof=lost found"`
 	Title        string          `json:"title" binding:"required"`
 	ContactPhone string          `json:"contact_phone" binding:"required"`
 	Information  InformationData `json:"information" binding:"required"`
-	Status       string          `json:"status"`
 }
 
 type ResponsePostData struct {
-	Post   PostData   `json:"post"`
-	Author AuthorData `json:"author"`
+	PostId       int             `json:"post_id"`
+	PostType     string          `json:"type"`
+	Title        string          `json:"title"`
+	ContactPhone string          `json:"contact_phone"`
+	Information  InformationData `json:"information"`
+	Status       string          `json:"status"`
+	Author       AuthorData      `json:"author"`
 }
 
 func Post(c *gin.Context) {
@@ -67,16 +70,14 @@ func Post(c *gin.Context) {
 	}
 
 	middles.ResponseSuccess(c, ResponsePostData{
-		Post: PostData{
-			PostId:       postId,
-			PostType:     postData.PostType,
-			Title:        postData.Title,
-			ContactPhone: postData.ContactPhone,
-			Information: InformationData{
-				Description: postData.Information.Description,
-			},
-			Status: "待审核",
+		PostId:       postId,
+		PostType:     postData.PostType,
+		Title:        postData.Title,
+		ContactPhone: postData.ContactPhone,
+		Information: InformationData{
+			Description: postData.Information.Description,
 		},
+		Status: "待审核",
 		Author: AuthorData{
 			UserId:   userId,
 			UserName: userName,
