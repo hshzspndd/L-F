@@ -28,15 +28,15 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	msg, id, code := services.Register(registerData.UserName, registerData.Password, registerData.Role, registerData.InviteCode)
-	if msg != "" {
-		c.Error(middles.GetError(code, msg))
+	user, responseErr, ok := services.Register(registerData.UserName, registerData.Password, registerData.Role, registerData.InviteCode)
+	if !ok {
+		c.Error(middles.GetError(responseErr.Code, responseErr.Message))
 		return
 	}
 
 	middles.ResponseSuccess(c, ResponseRegisterData{
-		Id:       id,
-		UserName: registerData.UserName,
-		Role:     registerData.Role,
+		Id:       user.UserId,
+		UserName: user.UserName,
+		Role:     user.Role,
 	})
 }

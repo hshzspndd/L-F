@@ -30,13 +30,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	message, code, id, role := services.Login(loginData.UserName, loginData.Password)
-	if id == 0 {
-		c.Error(middles.GetError(code, message))
+	user, responseErr, ok := services.Login(loginData.UserName, loginData.Password)
+	if !ok {
+		c.Error(middles.GetError(responseErr.Code, responseErr.Message))
 		return
 	}
 
-	token, err, expiredAt := utils.GenerateJwt(id, loginData.UserName, role)
+	token, err, expiredAt := utils.GenerateJwt(user.UserId, user.UserName, user.Role)
 	if err != nil {
 		c.Error(middles.GetError(500, "登录令牌生成失败"))
 		return
@@ -45,9 +45,9 @@ func Login(c *gin.Context) {
 	middles.ResponseSuccess(c, ResponseLoginData{
 		Token:     token,
 		ExpiredAt: expiredAt,
-		Id:        id,
-		UserName:  loginData.UserName,
-		Role:      role,
+		Id:        user.UserId,
+		UserName:  user.UserName,
+		Role:      user.Role,
 	})
 
 }

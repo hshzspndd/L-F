@@ -22,18 +22,18 @@ func CheckUserExistsWhenRegister(userName string) (bool, error) {
 }
 
 // 用户注册
-func Register(userName string, password string, role string, inviteCode string) (string, int, int) {
+func Register(userName string, password string, role string, inviteCode string) (models.User, *ResponseErrorForm, bool) {
 	var user models.User
 
 	// 将密码转化为哈希存储
 	hashPassword, err := utils.Hash(password)
 	if err != nil {
-		return "密码加密失败", 0, 500
+		return models.User{}, ErrHashPassword, false
 	}
 
 	if role == "系统管理员" || role == "失物招领管理员" {
 		if inviteCode != config.Config.GetString("register.admin_secret") {
-			return "没有权限", 0, 403
+			return models.User{}, ErrNoPermission, false
 		}
 	}
 	user.UserName = userName
@@ -42,16 +42,16 @@ func Register(userName string, password string, role string, inviteCode string) 
 
 	if flag, err := CheckUserExistsWhenRegister(userName); !flag {
 		if err != nil {
-			return "用户信息校验失败", 0, 500
+			return models.User{}, ErrUserCheckFail, false
 		}
 		err = database.DB.Model(&models.User{}).Create(&user).Error
 		if err != nil {
-			return "注册失败", 0, 500
+			return models.User{}, ErrDatabase, false
 		}
 		// 顺利注册
-		return "", user.UserId, 200
+		return user, &ResponseErrorForm{}, true
 	}
-	return "用户已存在", 0, 409
+	return models.User{}, ErrUserExists, false
 
 }
 
@@ -74,25 +74,25 @@ func CheckPassword(password1 string, password2 string) bool {
 }
 
 // 用户登录
-func Login(userName string, password string) (string, int, int, string) {
+func Login(userName string, password string) (models.User, *ResponseErrorForm, bool) {
 	flag, err, user := CheckUserExistsWhenLogin(userName)
 	if err != nil {
-		return "用户信息校验失败", 500, 0, ""
+		return user, ErrUserCheckFail, false
 	}
 	if flag {
 		loginPassword := user.Password
 		if CheckPassword(loginPassword, password) {
-			return "", 200, user.UserId, user.Role
+			return user, &ResponseErrorForm{}, true
 		} else {
-			return "密码错误", 403, 0, ""
+			return models.User{}, ErrWrongPassword, false
 		}
 	} else {
-		return "用户不存在", 404, 0, ""
+		return models.User{}, ErrUserNotFound, false
 	}
 }
 
 // 创建失物招领信息
-func CreatePost(postType string, userId int, title string, contactPhone string, description string) (string, int, int, error) {
+func CreatePost(postType string, userId int, title string, contactPhone string, description string) (models.Post, *ResponseErrorForm, bool) {
 	var post models.Post
 	post.PostType = postType
 	post.UserId = userId
@@ -102,9 +102,9 @@ func CreatePost(postType string, userId int, title string, contactPhone string, 
 	post.Status = "待审核"
 	err := database.DB.Model(&models.Post{}).Create(&post).Error
 	if err != nil {
-		return "数据库出错", 0, 500, err
+		return models.Post{}, ErrDatabase, false
 	}
 
-	return "发布成功", post.PostId, 200, nil
+	return post, &ResponseErrorForm{}, true
 
 }

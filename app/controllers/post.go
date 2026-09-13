@@ -62,18 +62,18 @@ func Post(c *gin.Context) {
 	userId := claims.UserId
 	userName := claims.UserName
 	role := claims.Role
-	message, postId, code, err := services.CreatePost(postData.PostType, userId, postData.Title, postData.ContactPhone, postData.Information.Description)
-	if err != nil {
-		c.Error(middles.GetError(code, message))
+	post, responseErr, ok := services.CreatePost(postData.PostType, userId, postData.Title, postData.ContactPhone, postData.Information.Description)
+	if !ok {
+		c.Error(middles.GetError(responseErr.Code, responseErr.Message))
 		c.Abort()
 		return
 	}
 
 	middles.ResponseSuccess(c, ResponsePostData{
-		PostId:       postId,
-		PostType:     postData.PostType,
-		Title:        postData.Title,
-		ContactPhone: postData.ContactPhone,
+		PostId:       post.PostId,
+		PostType:     post.PostType,
+		Title:        post.Title,
+		ContactPhone: post.ContactPhone,
 		Information: InformationData{
 			Description: postData.Information.Description,
 		},
