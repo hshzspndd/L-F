@@ -83,7 +83,7 @@ func Post(c *gin.Context) {
 		Information: InformationData{
 			Description: postData.Information.Description,
 		},
-		Status: "待审核",
+		Status: post.Status,
 		Author: AuthorData{
 			UserId:   userId,
 			UserName: userName,

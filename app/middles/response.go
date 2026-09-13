@@ -23,13 +23,13 @@ func GetError(code int, message string) *ResponseForm {
 }
 
 func ResponseSuccess(c *gin.Context, data interface{}) {
-	var response_success ResponseForm
-	response_success = ResponseForm{
+	var responseSuccess ResponseForm
+	responseSuccess = ResponseForm{
 		Code:    200,
 		Message: "success",
 		Data:    data,
 	}
-	c.JSON(200, response_success)
+	c.JSON(200, responseSuccess)
 }
 
 func GlobalResponseError(c *gin.Context) {
