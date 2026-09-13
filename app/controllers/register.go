@@ -26,6 +26,7 @@ func Register(c *gin.Context) {
 	err := c.ShouldBindJSON(&registerData)
 	if err != nil {
 		c.Error(middles.GetError(400, "数据获取失败"))
+		c.Abort()
 		return
 	}
 
@@ -37,6 +38,8 @@ func Register(c *gin.Context) {
 		} else {
 			c.Error(middles.GetError(500, "服务器内部错误"))
 		}
+		c.Abort()
+		return
 	}
 
 	middles.ResponseSuccess(c, ResponseRegisterData{

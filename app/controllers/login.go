@@ -28,6 +28,7 @@ func Login(c *gin.Context) {
 	err := c.ShouldBindJSON(&loginData)
 	if err != nil {
 		c.Error(middles.GetError(400, "数据获取失败"))
+		c.Abort()
 		return
 	}
 
@@ -39,11 +40,14 @@ func Login(c *gin.Context) {
 		} else {
 			c.Error(middles.GetError(500, "服务器内部错误"))
 		}
+		c.Abort()
+		return
 	}
 
 	token, err, expiredAt := utils.GenerateJwt(user.UserId, user.UserName, user.Role)
 	if err != nil {
 		c.Error(middles.GetError(500, "登录令牌生成失败"))
+		c.Abort()
 		return
 	}
 
