@@ -26,7 +26,7 @@ func Register(userName string, password string, role string, inviteCode string) 
 	var user models.User
 
 	// 将密码转化为哈希存储
-	hash_password, err := utils.Hash(password)
+	hashPassword, err := utils.Hash(password)
 	if err != nil {
 		return "密码加密失败", 0, 500
 	}
@@ -37,7 +37,7 @@ func Register(userName string, password string, role string, inviteCode string) 
 		}
 	}
 	user.UserName = userName
-	user.Password = hash_password
+	user.Password = hashPassword
 	user.Role = role
 
 	if flag, err := CheckUserExistsWhenRegister(userName); !flag {

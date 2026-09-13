@@ -22,9 +22,6 @@ func InitDB() {
 		config.Config.GetString("database.dbname"),
 	)
 
-	fmt.Println(config.Config.GetInt("database.port"))
-	fmt.Println(config.Config.GetString("database.host"))
-	fmt.Println(1)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err.Error())
