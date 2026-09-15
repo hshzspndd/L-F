@@ -17,6 +17,7 @@ func Router(c *gin.Engine) {
 		api.Use(middles.ParseJwt())
 		{
 			api.POST("/post", controllers.Post)
+			api.GET("/list/:page", controllers.Manage)
 		}
 	}
 }
