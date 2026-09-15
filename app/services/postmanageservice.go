@@ -39,6 +39,10 @@ func GetMyPosts(userId int, page int, postType string, status string) (*PageResu
 		query = query.Where("status = ?", status)
 	}
 
+	if postType != "" {
+		query = query.Where("post_type = ?", postType)
+	}
+
 	// 2. 先查总条数（用于前端算总页数）
 	if err := query.Count(&total).Error; err != nil {
 		return nil, ErrDatabase
