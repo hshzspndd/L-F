@@ -25,7 +25,7 @@ func Register(c *gin.Context) {
 	var registerData RegisterData
 	err := c.ShouldBindJSON(&registerData)
 	if err != nil {
-		c.Error(middles.GetError(400, "数据获取失败"))
+		c.Error(middles.NewError(400, "数据获取失败"))
 		c.Abort()
 		return
 	}
@@ -34,9 +34,9 @@ func Register(c *gin.Context) {
 	if err != nil {
 		var bizErr *services.ResponseErrorForm
 		if errors.As(err, &bizErr) {
-			c.Error(middles.GetError(bizErr.Code, bizErr.Message))
+			c.Error(middles.NewError(bizErr.Code, bizErr.Message))
 		} else {
-			c.Error(middles.GetError(500, "服务器内部错误"))
+			c.Error(middles.NewError(500, "服务器内部错误"))
 		}
 		c.Abort()
 		return

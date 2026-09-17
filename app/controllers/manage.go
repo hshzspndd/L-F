@@ -13,7 +13,7 @@ func Manage(c *gin.Context) {
 	strPage := c.Param("page")
 	page, err := strconv.Atoi(strPage)
 	if err != nil {
-		c.Error(middles.GetError(400, "参数获取失败"))
+		c.Error(middles.NewError(400, "参数获取失败"))
 	}
 
 	postType := c.Query("type")
@@ -21,14 +21,14 @@ func Manage(c *gin.Context) {
 
 	v, ok := c.Get("claims")
 	if !ok {
-		c.Error(middles.GetError(401, "未登录"))
+		c.Error(middles.NewError(401, "未登录"))
 		c.Abort()
 		return
 	}
 
 	claims, ok := v.(*utils.Claims)
 	if !ok {
-		c.Error(middles.GetError(401, "无效的token"))
+		c.Error(middles.NewError(401, "无效的token"))
 		c.Abort()
 		return
 	}

@@ -14,7 +14,7 @@ func (e *ResponseForm) Error() string {
 	return e.Message
 }
 
-func GetError(code int, message string) *ResponseForm {
+func NewError(code int, message string) *ResponseForm {
 	return &ResponseForm{
 		Code:    code,
 		Message: message,

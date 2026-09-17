@@ -14,7 +14,7 @@ func ParseJwt() gin.HandlerFunc {
 		authorization := c.GetHeader("Authorization")
 		authorizationList := strings.SplitN(authorization, " ", 2)
 		if len(authorizationList) != 2 || authorizationList[0] != "Bearer" {
-			c.Error(GetError(401, "未登录或无效的token"))
+			c.Error(NewError(401, "未登录或无效的token"))
 			c.Abort()
 			return
 		}
@@ -23,7 +23,7 @@ func ParseJwt() gin.HandlerFunc {
 			return []byte(config.Config.GetString("jwt.key")), nil
 		})
 		if err != nil {
-			c.Error(GetError(401, "token解析失败"))
+			c.Error(NewError(401, "token解析失败"))
 			c.Abort()
 			return
 		}

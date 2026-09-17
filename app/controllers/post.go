@@ -41,21 +41,21 @@ func Post(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&postData)
 	if err != nil {
-		c.Error(middles.GetError(400, "数据获取失败"))
+		c.Error(middles.NewError(400, "数据获取失败"))
 		c.Abort()
 		return
 	}
 
 	v, ok := c.Get("claims")
 	if !ok {
-		c.Error(middles.GetError(401, "未登录"))
+		c.Error(middles.NewError(401, "未登录"))
 		c.Abort()
 		return
 	}
 
 	claims, ok := v.(*utils.Claims)
 	if !ok {
-		c.Error(middles.GetError(401, "无效的token"))
+		c.Error(middles.NewError(401, "无效的token"))
 		c.Abort()
 		return
 	}
@@ -67,9 +67,9 @@ func Post(c *gin.Context) {
 	if err != nil {
 		var bizErr *services.ResponseErrorForm
 		if errors.As(err, &bizErr) {
-			c.Error(middles.GetError(bizErr.Code, bizErr.Message))
+			c.Error(middles.NewError(bizErr.Code, bizErr.Message))
 		} else {
-			c.Error(middles.GetError(500, "服务器内部错误"))
+			c.Error(middles.NewError(500, "服务器内部错误"))
 		}
 		c.Abort()
 		return

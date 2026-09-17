@@ -27,7 +27,7 @@ func Login(c *gin.Context) {
 	var loginData LoginData
 	err := c.ShouldBindJSON(&loginData)
 	if err != nil {
-		c.Error(middles.GetError(400, "数据获取失败"))
+		c.Error(middles.NewError(400, "数据获取失败"))
 		c.Abort()
 		return
 	}
@@ -36,9 +36,9 @@ func Login(c *gin.Context) {
 	if err != nil {
 		var bizErr *services.ResponseErrorForm
 		if errors.As(err, &bizErr) {
-			c.Error(middles.GetError(bizErr.Code, bizErr.Message))
+			c.Error(middles.NewError(bizErr.Code, bizErr.Message))
 		} else {
-			c.Error(middles.GetError(500, "服务器内部错误"))
+			c.Error(middles.NewError(500, "服务器内部错误"))
 		}
 		c.Abort()
 		return
@@ -46,7 +46,7 @@ func Login(c *gin.Context) {
 
 	token, err, expiredAt := utils.GenerateJwt(user.UserId, user.UserName, user.Role)
 	if err != nil {
-		c.Error(middles.GetError(500, "登录令牌生成失败"))
+		c.Error(middles.NewError(500, "登录令牌生成失败"))
 		c.Abort()
 		return
 	}
