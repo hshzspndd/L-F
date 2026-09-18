@@ -10,12 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type LoginData struct {
+type loginData struct {
 	UserName string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-type ResponseLoginData struct {
+type ResponseloginData struct {
 	Token     string    `json:"token"`
 	ExpiredAt time.Time `json:"expired_at"`
 	Id        int       `json:"id"`
@@ -24,7 +24,7 @@ type ResponseLoginData struct {
 }
 
 func Login(c *gin.Context) {
-	var loginData LoginData
+	var loginData loginData
 	err := c.ShouldBindJSON(&loginData)
 	if err != nil {
 		c.Error(middles.NewError(400, "数据获取失败"))
@@ -51,7 +51,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	middles.ResponseSuccess(c, ResponseLoginData{
+	middles.ResponseSuccess(c, ResponseloginData{
 		Token:     token,
 		ExpiredAt: expiredAt,
 		Id:        user.UserId,
